@@ -148,7 +148,7 @@ end
 function ppm_update(name, line, wc)
    if wc.index == "" then
       printmsg("*** Checking if update is available for Pwar's Plugin Manager.. Please wait.\r\n\r\n")
-      local url = "https://raw.githubusercontent.com/hudmond/ppm/master/Pwars_Plugin_Manager.xml"
+      local url = "https://github.com/AsmodeusBrooding/DemonUpdater/blob/master/DemonUpdater.xml"
       async.doAsyncRemoteRequest(url, async_ppm_download_complete, "HTTPS", 120)
    else
       Execute("ppm install " .. wc.index)
