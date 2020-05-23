@@ -9,5 +9,61 @@
     <installpath>1</installpath>
   </plugin>
 
+  <plugin>
+    <name>Showmap</name>
+    <author>Pwar</author>
+    <description>This gives you links to external map sites. Highly recommended.</description>
+    <id>63882d1089f727f5f94c3f41</id>
+    <download>https://raw.githubusercontent.com/hudmond/ppm/master/misc/sm-latest.zip</download>
+    <installpath>0</installpath>
+  </plugin>
+
+  <plugin>
+    <name>Soundpack</name>
+    <author>Pwar</author>
+    <id>23832d1089f727f5f34abad8</id>
+    <description>Highly configurable soundpack plugin.</description>
+    <download>https://raw.githubusercontent.com/hudmond/ppm/master/misc/sp-latest.zip</download>
+    <installpath>1</installpath>
+  </plugin>
+
+  <plugin>
+    <name>mudbin</name>
+    <author>Pwar</author>
+    <id>04d9e64f834452b145b459b7</id>
+    <description>This lets you copy anything from the main output window, press Ctrl+P, and it will post the contents to http://mudbin.tk/ with the color codes intact, and copy the link to your clipboard for sharing with others.</description>
+    <download>https://raw.githubusercontent.com/hudmond/hudmond.github.io/master/Aardwolf_mudbin_v1.0.1.zip</download>
+    <installpath>0</installpath>
+  </plugin>
+
+  <plugin>
+    <name>WinkleGold - Search &amp; Destroy</name>
+    <author>Pwar</author>
+    <id>b6eae87ccedd84f510b74715</id>
+    <id>e50b1d08a0cfc0ee9c442001</id>
+    <id>3f498d929793c12cb70f5999</id>
+    <description>Enhanced version of WinkleWinkle's Search &amp; Destroy script.</description>
+    <download>https://raw.githubusercontent.com/hudmond/ppm/master/misc/wg-latest.zip</download>
+    <installpath>0</installpath>
+  </plugin>
+  
+  <plugin>
+    <name>WinkleGold - Spellup</name>
+    <author>Pwar</author>
+    <id>e50b1d08a0cfc0ee9c442002</id>
+    <description>Uninstall your existing spellup plugin before installing! Enhanced version of WinkleWinkle's Spellup script. This fixes saving of SetClanSn and recasting of some spells/skills. It is a work in progress, feel free to send Pwar notes requesting specific spells/skills that aren't being recasted by the plugin and I will try to fix them.</description>
+    <download>https://raw.githubusercontent.com/hudmond/ppm/master/misc/su-latest.zip</download>
+    <installpath>0</installpath>
+  </plugin>
+  
+  <plugin>
+    <name>Inviter</name>
+    <author>Pwar</author>
+    <id>56e7e7121bf320c3510ee2e0</id>
+    <description>Lets you add friends/clan members to a list to auto-invite them to party when they login. Also lets group members use commands via tell/group messages to invite themselves or others.</description>
+    <download>https://raw.githubusercontent.com/hudmond/ppm/master/misc/inviter-latest.zip</download>
+    <installpath>0</installpath>
+  </plugin>
+
 
  </pluginsListing>
