@@ -9,31 +9,11 @@
    purpose="Manages updates for DemonMUSH"
    date_written="2020-5-24 01:08:25"
    requires="4.76"
-   version="1.34"
+   version="1.35"
    save_state="y"
    >
 <description trim="y">
 <![CDATA[
->    dmu
-        - display summary of all plugins
-
->    dmu install [number]
-        - downloads and installs/updates the plugin
-
->    dmu update
-        - checks for update for dmu itself
-
->    dmu update [number]
-        - this functions the same as "dmu install"
-
->    dmu reload [number]
-        - reloads all xml files related to the plugin
-
->    dmu reset
-        - resets all retained information about previous updates
-
->    dmu help
-        - displays this help file :)
 
 ]]>
 </description>
@@ -102,6 +82,9 @@ local async = require "async"
 local last_update
 require "zip"
 require "serialize"
+require "utility"
+dofile(GetPluginInfo(GetPluginID(), 20) .. "plugin_colors.lua")
+version = 1.35
 local installedPlugins = {}
 local lastListHash
 local currentPlugin = {}
@@ -158,11 +141,31 @@ end
 function dmu_help(name, line, wc)
    print("")
 	NoteStyle(2)			        
-	ColourNote("MediumSeaGreen", "", "DemonMUSH Plugin Manager")
-	NoteStyle(0)
-	print("")
-	ColourNote("SteelBlue", "", GetPluginInfo (GetPluginID (), 3))
-	print("")
+	--ColourNote("MediumSeaGreen", "", "DemonMUSH Plugin Manager")
+	  util.print("{R================================================================================")
+	  util.print("")
+      util.print("{W--------------------------------------------------------------------------------")
+      util.print("{WPlugin Name  : {RD{re{Rm{ro{Rn{YM{yU{YS{yH {x238Plugin Manager")
+      util.print("{WAuthor       : {x238Asmodeus and Pwar")
+      util.print("{WVersion      : {G" .. version)
+      util.print("{W--------------------------------------------------------------------------------")
+      util.print("")
+      util.print("{Y dmu                         {R-->{W Display summary of all plugins")
+	  util.print("")
+      util.print("{Y dmu install <number>        {R-->{W Downloads, and installs/updates the plugin")
+	  util.print("")
+      util.print("{Y dmu update                  {R-->{W Checks for an update for DMU itself")
+	  util.print("")
+      util.print("{Y dmu update <number>         {R-->{W This functions the same as {Y'{Rdmu install{Y'")
+	  util.print("")
+      util.print("{Y dmu reload <number>         {R-->{W Reloads all xml files related to the plugin")
+	  util.print("")
+      util.print("{Y dmu reset                   {R-->{W Resets all information about previous updates")
+	  util.print("")
+      util.print("{Y dmu help                    {R-->{W Displays this help file")
+      util.print("")
+      util.print("{R================================================================================")
+
 end
 
 function async_head_plist(retval, page, status, headers, full_status, request_url)
@@ -323,10 +326,6 @@ function async_plugin_download_complete(retval, page, status, headers, full_stat
          --print(xmlFiles[i].filename, xmlFiles[i].pluginid)
          --local version = tonumber(string.match(page, '%s%s+version="([0-9%.]+)"'))
          if not (IsPluginInstalled(xmlFiles[i].pluginid) and GetPluginInfo(xmlFiles[i].pluginid, 17)) then
-		 print(xmlFiles[i].filename)
-		 print(filename)
-		 print(xmlFile.filename)
-		 print(xmlFiles[i].filename)
             LoadPlugin(folder .. xmlFiles[i].filename)
          else
             ReloadPlugin(xmlFiles[i].pluginid)
@@ -432,8 +431,16 @@ function OnPluginInstall()
 		lastPluginList = load( "return "..lastListStr)( ) 
 	end
    lastListHash = GetVariable("lastListHash")
-   ColourTell("CornFlowerBlue", "", "DemonMUSH Plugin Manager has been loaded. Type \"", "MediumSeaGreen", "", "dmu", "CornFlowerBlue", "", "\" or \"", "MediumSeaGreen", "", "dmu help", "CornFlowerBlue", "", "\"")
-   print("")
+      util.print("{W--------------------------------------------------------------------------------")
+      util.print("{WPlugin Name  : {RD{re{Rm{ro{Rn{YM{yU{YS{yH {x238Plugin Manager has been loaded!")
+      util.print("{WAuthor       : {x238Asmodeus and Pwar")
+      util.print("{WVersion      : {G" .. version)
+      util.print("{W--------------------------------------------------------------------------------")
+      util.print("")
+      util.print("{x238Type {Ydmu{x238 or {Ydmu help{x238 to find new plugins or update existing ones.")
+      util.print("")   
+      util.print("{W--------------------------------------------------------------------------------")
+	  print("")
 end
 
 function OnPluginSaveState()
