@@ -9,7 +9,7 @@
    purpose="Manages updates for DemonMUSH"
    date_written="2020-5-24 01:08:25"
    requires="4.76"
-   version="1.35"
+   version="2.01"
    save_state="y"
    >
 <description trim="y">
@@ -84,7 +84,7 @@ require "zip"
 require "serialize"
 require "utility"
 dofile(GetPluginInfo(GetPluginID(), 20) .. "plugin_colors.lua")
-version = 1.35
+version = 2.01
 local installedPlugins = {}
 local lastListHash
 local currentPlugin = {}
@@ -95,7 +95,7 @@ local pluginListUrl = "https://raw.githubusercontent.com/AsmodeusBrooding/DemonU
 local lastPluginList
 
 function dmu_main(name, line, wc)
-   printmsg("*** Requesting plugin/update list from server.. Please wait.\r\n\r\n")
+  util.print("{x238The {RD{re{Rm{ro{Rn{YM{yU{YS{yH{D {RA{Yr{Gt{Ci{Bf{Mi{mc{Ri{Ya{Gl {CI{Bn{Mt{me{Rl{Yl{Gi{Cg{Be{Mn{mc{Re {DA{wn{Wd{Dr{wo{Wi{Dd {RS{ru{Rp{re{Rr{D {RCo{rm{Rp{ru{Rt{re{Rr{x238 suddenly snaps into \nexistence and starts furiously compiling new information from the mortal realm.")
    async.HEAD(pluginListUrl, async_head_plist, "HTTPS", 120)
 end
 
@@ -120,7 +120,7 @@ end
 function dmu_reload(name, line, wc)
    for p = 1, #pluginList do
       if p == tonumber(wc.index) then
-         printmsg("Attempting to reload plugin #" .. wc.index .. " (" .. pluginList[p].name .. ")")
+         util.print("\n{R[ {WAttempting to reload plugin #" .. wc.index .. " {R({W" .. pluginList[p].name .. "{R) ]\n")
          for i = 1, #pluginList[p].ids do
             ReloadPlugin(pluginList[p].ids[i])
          end
@@ -130,7 +130,7 @@ end
 
 function dmu_update(name, line, wc)
    if wc.index == "" then
-      printmsg("*** Checking if update is available for the DemonMUSH Plugin Manager.. Please wait.\r\n\r\n")
+      util.print("{R*** {WChecking if an update is available for the {RD{re{Rm{ro{Rn{YM{yU{YS{yH{W Plugin Manager.. Please wait. {R***\r\n\r\n")
       local url = "https://raw.githubusercontent.com/AsmodeusBrooding/DemonUpdater/master/DemonMUSH_Plugin_Manager.xml"
       async.doAsyncRemoteRequest(url, async_dmu_download_complete, "HTTPS", 120)
    else
@@ -140,7 +140,7 @@ end
 
 function dmu_help(name, line, wc)
    print("")
-	NoteStyle(2)			        
+	NoteStyle(2)
 	--ColourNote("MediumSeaGreen", "", "DemonMUSH Plugin Manager")
 	  util.print("{R================================================================================")
 	  util.print("")
@@ -154,7 +154,7 @@ function dmu_help(name, line, wc)
 	  util.print("")
       util.print("{Y dmu install <number>        {R-->{W Downloads, and installs/updates the plugin")
 	  util.print("")
-      util.print("{Y dmu update                  {R-->{W Checks for an update for DMU itself")
+      util.print("{Y dmu update                  {R-->{W Checks for an update for dmu itself")
 	  util.print("")
       util.print("{Y dmu update <number>         {R-->{W This functions the same as {Y'{Rdmu install{Y'")
 	  util.print("")
@@ -201,32 +201,48 @@ function async_head_plugin(retval, page, status, headers, full_status, request_u
       end
       if thisPlugin == nil then return end
       thisPlugin.lastModified = headers["etag"] or "Unknown"
+	  require("tprint")
+	  	--  tprint(headers)
+		  LatestTag = headers.etag
+		  	--	 print("Hrm: ", headers.etag)
+	 -- tprint(headers)
    if pListNum == #pluginList then
       pListNum = 0
       for i = 1, #pluginList do
+	--  tprint(pluginList)
          thisPlugin = pluginList[i]
+	--	 tprint(thisPlugin)
          thisPlugin.updated = false
-         ColourTell("CornFlowerBlue", "", "[" .. i .. "] ", "LightSkyBlue", "", thisPlugin.name .. " ")
+		 thisPlugin.lastModified = headers["etag"] or "Unknown"
+		-- util.print("{Y[{W"..i.."{Y] {W".. thisPlugin.name)
+		 util.print("{R--------------------------------------------------------------------------------\n")
+         ColourTell("dimgrey", "", "[" .. i .. "] ", "gold", "", thisPlugin.name .. " ")
          if thisPlugin.installed then
-            Hyperlink("dmu reload " .. i, "[Reload Plugin] ", "Reload Plugin #" .. pListNum, "LimeGreen", "black", 0, 1)
+            Hyperlink("dmu reload " .. i, "[Reload Plugin] ", "Reload Plugin #" .. pListNum, "yellow", "black", 0, 1)
+
             for k, v in pairs(installedPlugins) do
                if thisPlugin.ids[1] == k then
-                  if thisPlugin.lastModified == v then
+			--   print(thisPlugin.lastModified)
+		--	    print(thisPlugin.lastModified)
+			  -- print(thisPlugin.lastModified)
+                  if thisPlugin.lastModified == LatestTag then
+				  			--   tprint(thisPlugin)
                      thisPlugin.updated = true
-                     ColourTell("LimeGreen", "", "*up-to-date*")
-                     print("")
+				     util.print("{G*UP-TO-DATE*")
+					 end
                   end
                end
-            end
+
             if not thisPlugin.updated then
-               Hyperlink("dmu install " .. i, "[Update Plugin]", "Download and Update Plugin #" .. i, "DarkOrange", "black", 0, 1)
+               Hyperlink("dmu install " .. i, "[Update Plugin]", "Download and Update Plugin #" .. i, "red", "black", 0, 1)
                print("")
                --if thisPlugin.lastModified ~= "Unknown" then
                --   ColourTell("LightSkyBlue", "", "     Update available since: " .. thisPlugin.lastModified)
                --   print("")
                --end
             end
-            ColourTell("CadetBlue", "", "     " .. thisPlugin.description)
+						util.print("")
+            ColourTell("CadetBlue", "", "     " .. textWrap(thisPlugin.description))
             print("\r\n\r\n")
          else
             Hyperlink("dmu install " .. i, "[Install Plugin]", "Download and Install Plugin #" .. pListNum, "DarkOrange", "black", 0, 1)
@@ -242,13 +258,13 @@ function async_head_plugin(retval, page, status, headers, full_status, request_u
                end
             end
             print("")
-            ColourTell("CadetBlue", "", "     " .. thisPlugin.description)
+            ColourTell("CadetBlue", "", "     " .. textWrap(thisPlugin.description))
             print("\r\n\r\n")
          end
       end
   --    ColourTell("LightSkyBlue", "", "** Pwar write plugins for fun, and to share with others.\r\n** If you find them useful and would like to donate, I do accept paypals at: ")
   --    Hyperlink("http://paypal.me/hudmond", "http://paypal.me/hudmond", "Click to donate via paypal", "yellowgreen", "", 1)
-      print("")
+	  		 		 util.print("{R--------------------------------------------------------------------------------")
       --printmsg("End of plugin list, " .. #pluginList .. " plugins indexed.")
    end
 end
@@ -258,7 +274,7 @@ function async_dmu_download_complete(retval, page, status, headers, full_status,
     local version = tonumber(string.match(page, '%s%s+version="([0-9%.]+)"'))
     local installedVer = GetPluginInfo(GetPluginID(), 19)
     if version > installedVer then
-      printmsg("Updating from version " .. installedVer .. " to version " .. version)
+      util.print("{WUpdating from version {Y" .. installedVer .. "{W to version {G" .. version)
       local file = io.open(GetPluginInfo(GetPluginID(), 6), "w")
       page = string.gsub(page, "\r", "")
       file:write(page)
@@ -266,7 +282,7 @@ function async_dmu_download_complete(retval, page, status, headers, full_status,
       if GetAlphaOption("script_prefix") == "" then SetAlphaOption("script_prefix", "\\\\\\") end
       Execute(GetAlphaOption("script_prefix").."DoAfterSpecial(1, \"ReloadPlugin('"..GetPluginID().."')\", sendto.script)")
     else
-      printmsg("You already have the latest version of the DemonMUSH Plugin Manager installed.")
+      util.print("{WYou are already on version {Y"..version.."{W which is the latest version of the {RD{re{Rm{ro{Rn{YM{yU{YS{yH {WPlugin Manager{W.")
     end
   else
       printmsg("Plugin update check failed...Error " .. tostring(status))
@@ -281,6 +297,7 @@ function async_plugin_download_complete(retval, page, status, headers, full_stat
       folder = GetInfo(66)
    else
       folder = GetPluginInfo(GetPluginID(), 20)
+	 -- print(folder)
    end
    --print("FOLDER IS " .. folder)
    if status == 200 then -- download successful
@@ -294,9 +311,17 @@ function async_plugin_download_complete(retval, page, status, headers, full_stat
       for file in zfile:files() do
          local currFile, err = zfile:open(file.filename)
          local currFileContents = currFile:read("*a") -- read entire contents of current file
-         local hBinaryOutput = io.open(folder .. file.filename, "wb")
+		 	--	 print(file.filename)
+			--	 print(folder..file.filename)
+		---	print(folder)
+			FileName = file.filename
+			FileName = string.gsub(FileName, "worlds/plugins/", "worlds\\plugins\\")
+				--print("Folder:Filename" ,folder..file.filename)
+	--			print(FileName)
+         local hBinaryOutput = io.open(FileName, "wb")
           -- write current file inside zip to a file outside zip
           if(hBinaryOutput)then
+	--	  print("YES")
               hBinaryOutput:write(currFileContents)
               hBinaryOutput:close()
           end
@@ -305,19 +330,20 @@ function async_plugin_download_complete(retval, page, status, headers, full_stat
          if fileExt == ".xml" then
             xmlFile.filename = file.filename
             --print(xmlFile.filename)
-            xmlFile.pluginid = string.match(currFileContents, '%s%s+id="(.-)"')            
+            xmlFile.pluginid = string.match(currFileContents, '%s%s+id="(.-)"')
             table.insert(xmlFiles, xmlFile)
             xmlFile = {}
          end
-         currFile:close()
+    --     print(currFile:close())
+	--	 print(currFile)
       end
       os.remove(folder .. "temp_update.zip")
-	  print("REMOVED FOLDER: ", folder)
-      printmsg("Update succeeded, loading/reloading plugins.")  
+	 -- print("REMOVED FOLDER: ", folder)
+      printmsg("Update succeeded, loading/reloading plugins.")
       printmsg("----------------------------------------------")
       for i = 1, #updatePlugin.ids do
          --if not IsPluginInstalled(thisPlugin.ids[i]) then
-            --LoadPlugin(folder ..  
+            --LoadPlugin(folder ..
          --end
          --(IsPluginInstalled(thisPlugin.ids[i]) and GetPluginInfo(thisPlugin.ids[i], 17)) then
          --ReloadPlugin(updatePlugin.ids[i])
@@ -326,15 +352,17 @@ function async_plugin_download_complete(retval, page, status, headers, full_stat
          --print(xmlFiles[i].filename, xmlFiles[i].pluginid)
          --local version = tonumber(string.match(page, '%s%s+version="([0-9%.]+)"'))
          if not (IsPluginInstalled(xmlFiles[i].pluginid) and GetPluginInfo(xmlFiles[i].pluginid, 17)) then
-            LoadPlugin(folder .. xmlFiles[i].filename)
+            LoadPlugin(FileName)
+			util.print("{x238Plugin {RNOT{x238 loaded, loading now.")
          else
             ReloadPlugin(xmlFiles[i].pluginid)
+			util.print("{x238Plugin is already installed....Reloading")
          end
          installedPlugins[xmlFiles[i].pluginid] = headers["etag"]
       end
       SaveState()
    else
-      printmsg("Plugin download failed...Error " .. tostring(status))
+      util.print("{x238Plugin download {Rfailed{x238...{RError{x238 " .. tostring(status))
       --printmsg(headers["location"])
    end
    updatePlugin = {}
@@ -413,22 +441,15 @@ function printmsg(msg)
    ColourNote("cornflowerblue", "", msg)
 end
 
-function OnPluginBroadcast (msg, id, name, text)
-	require "gmcphelper"
-   if (id == '3e7dedbe37e44942dd46d264') then              -- GMCP Handler plugin
-		if text == "char.status" then
-		end
-   end
-end
 
 function OnPluginInstall()
    local installedStr = GetVariable("installedPlugins")
    local lastListStr = GetVariable("lastPluginList")
 	if installedStr ~= nil then
-		installedPlugins = load( "return "..installedStr)( ) 
+		installedPlugins = load( "return "..installedStr)( )
 	end
    if lastListStr ~= nil then
-		lastPluginList = load( "return "..lastListStr)( ) 
+		lastPluginList = load( "return "..lastListStr)( )
 	end
    lastListHash = GetVariable("lastListHash")
       util.print("{W--------------------------------------------------------------------------------")
@@ -438,7 +459,7 @@ function OnPluginInstall()
       util.print("{W--------------------------------------------------------------------------------")
       util.print("")
       util.print("{x238Type {Ydmu{x238 or {Ydmu help{x238 to find new plugins or update existing ones.")
-      util.print("")   
+      util.print("")
       util.print("{W--------------------------------------------------------------------------------")
 	  print("")
 end
@@ -466,6 +487,24 @@ function md5sum(filename)
 		end
 	end
 end
+
+function textWrap( str, limit, indent, indentFirst )
+
+    limit = limit or 72
+    indent = indent or ""
+    indentFirst = indentFirst or indent
+
+    local here = 1 - #indentFirst
+    return indentFirst .. str:gsub( "(%s+)()(%S+)()",
+        function( sp, st, word, fi )
+            if fi - here > limit then
+                here = st - #indent
+                return "\n" .. indent .. word
+            end
+        end
+    )
+end
+
 ]]>
-</script> 
+</script>
 </muclient>
